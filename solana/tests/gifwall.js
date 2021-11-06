@@ -5,7 +5,7 @@ const main = async() => {
   console.log("🚀 Starting test...")
   const provider = anchor.Provider.env();
   anchor.setProvider(provider);
-  const program = anchor.workspace.Myepicproject;
+  const program = anchor.workspace.Gifwall;
   const baseAccount = anchor.web3.Keypair.generate();
 
   const tx = await program.rpc.startStuffOff({

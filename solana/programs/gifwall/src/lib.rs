@@ -1,9 +1,9 @@
 use anchor_lang::prelude::*;
 
-declare_id!("8ma6tqcjQD9ntJaQMrbwnPFt4tNGKeKdmschHPMopMFm");
+declare_id!("6Nne2tQqiuXMnw24cqbw3ui2Mv55tcX6Pxcn2UyJQ98y");
 
 #[program]
-pub mod myepicproject {
+pub mod gifwall {
   use super::*;
   pub fn start_stuff_off(ctx: Context<StartStuffOff>) -> ProgramResult {
     let base_account = &mut ctx.accounts.base_account;
