@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("6Nne2tQqiuXMnw24cqbw3ui2Mv55tcX6Pxcn2UyJQ98y");
+declare_id!("AhS5LiD6UDwiv4nWgQRn7c5NthGi6v1KCbzYdy5NiX6B");
 
 #[program]
 pub mod gifwall {
@@ -15,12 +15,32 @@ pub mod gifwall {
     let base_account = &mut ctx.accounts.base_account;
 
     let item = ItemStruct {
+        id: base_account.total_gifs + 1,
         gif_link: gif_link.to_string(),
+        updoots: 0,
         user_address: *base_account.to_account_info().key,
     };
 
     base_account.gif_list.push(item);
     base_account.total_gifs += 1;
+    Ok(())
+  }
+
+  pub fn updoot(ctx: Context<Updoot>, gif_id: u32) -> ProgramResult {
+    let base_account = &mut ctx.accounts.base_account;
+
+    let gif_id = gif_id as u32;
+
+    let gif = &mut base_account.gif_list.iter_mut().find(|x| x.id == gif_id);
+    match gif {
+        Some(ref mut gif) => {
+            gif.updoots += 1;
+        },
+        None => {
+            return Err(ProgramError::InvalidArgument);
+        }
+    }
+
     Ok(())
   }
 }
@@ -40,14 +60,22 @@ pub struct AddGif<'info> {
     pub base_account: Account<'info, BaseAccount>,
 }
 
+#[derive(Accounts)]
+pub struct Updoot<'info> {
+    #[account(mut)]
+    pub base_account: Account<'info, BaseAccount>,
+}
+
 #[derive(Debug, Clone, AnchorSerialize, AnchorDeserialize)]
 pub struct ItemStruct {
+    pub id: u32,
     pub gif_link: String,
     pub user_address: Pubkey,
+    pub updoots: u8,
 }
 
 #[account]
 pub struct BaseAccount {
-    pub total_gifs: u64,
+    pub total_gifs: u32,
     pub gif_list: Vec<ItemStruct>,
 }

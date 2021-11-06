@@ -9,14 +9,7 @@ import kp from './keypair.json'
 // Constants
 const TWITTER_HANDLE = '_buildspace';
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
-const TEST_GIFS = [
-	'https://i.giphy.com/media/eIG0HfouRQJQr1wBzz/giphy.webp',
-	'https://media3.giphy.com/media/L71a8LW2UrKwPaWNYM/giphy.gif?cid=ecf05e47rr9qizx2msjucl1xyvuu47d7kf25tqt2lvo024uo&rid=giphy.gif&ct=g',
-	'https://media4.giphy.com/media/AeFmQjHMtEySooOc8K/giphy.gif?cid=ecf05e47qdzhdma2y3ugn32lkgi972z9mpfzocjj6z1ro4ec&rid=giphy.gif&ct=g',
-	'https://i.giphy.com/media/PAqjdPkJLDsmBRSYUp/giphy.webp'
-]
-
-const { SystemProgram, Keypair } = web3;
+const { SystemProgram } = web3;
 
 const arr = Object.values(kp._keypair.secretKey);
 const secret = new Uint8Array(arr);
@@ -28,6 +21,15 @@ const network = clusterApiUrl('devnet');
 
 const opts = {
   preflightCommitment: "processed"
+}
+
+const formatAccount = (account) => {
+  return {
+    id: account.id,
+    gifLink: account.gifLink.toString(),
+    updoots: account.updoots,
+    userAddress: account.userAddress.toString(),
+  }
 }
 
 const App = () => {
@@ -148,12 +150,29 @@ const App = () => {
           <div className="gif-grid">
             {gifList.map((gif,index) => (
               <div className="gif-item" key={index}>
-                <img src={gif.gifLink} alt={gif.gifLink} />
+                <img src={gif.gifLink} alt={gif.gifLink} onClick={() => { updoot(gif.id) }} />
+                <div className="upvotes">{gif.updoots}</div>
               </div>
             ))}
           </div>
         </div>
       )
+    }
+  }
+
+  const updoot = async (id) => {
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+      await program.rpc.updoot(id, {
+        accounts: {
+          baseAccount: baseAccount.publicKey,
+        },
+      });
+
+      await getGifList();
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -170,7 +189,7 @@ const App = () => {
       const account = await program.account.baseAccount.fetch(baseAccount.publicKey);
 
       console.log('Got the account', account);
-      setGifList(account.gifList);
+      setGifList(account.gifList.map(formatAccount));
     } catch (e) {
       console.error(e);
       setGifList(null);
@@ -188,9 +207,9 @@ const App = () => {
     <div className="App">
       <div className={walletAddress ? 'authed-container' : 'container'}>
         <div className="header-container">
-          <p className="header">🖼 GIF Portal</p>
+          <p className="header">🖼 Salvana 🖼</p>
           <p className="sub-text">
-            View your GIF collection in the metaverse ✨
+            View the best GIF collection of the capitone in the metaverse ✨
           </p>
           {!walletAddress && renderNotConnectedContainer()}
           {walletAddress && renderConnectedContainer()}

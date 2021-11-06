@@ -1,7 +1,7 @@
 .App {
   height: 100vh;
   background-color: #1a202c;
-  overflow: scroll;
+  overflow-y: scroll;
   text-align: center;
 }
 
@@ -102,6 +102,7 @@
   position: relative;
   justify-self: center;
   align-self: center;
+  position:relative;
 }
 
 .gif-item img {
@@ -109,6 +110,19 @@
   height: 300px;
   border-radius: 10px;
   object-fit: cover;
+  cursor: pointer;
+}
+
+.gif-item .upvotes {
+  position: absolute;
+  right: 15px;
+  top:15px;
+  width: 30px;
+  height: 25px;
+  color:#fafafa;
+  background-color: #1a202c;
+  opacity: 0.85;
+  padding-top:5px;
 }
 
 .connected-container input[type='text'] {
